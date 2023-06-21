@@ -522,7 +522,7 @@ class CourseTabView(EdxFragmentView):
                 PageLevelMessages.register_warning_message(
                     request,
                     Text(_("To see course content, {sign_in_link} or {register_link}.")).format(
-                        sign_in_link=HTML('<a href="/login?next={current_url}">{sign_in_label}</a>').format(
+                        sign_in_link=HTML('<a href="/auth/login/auth0-plugin/?auth_entry=login&next={current_url}">{sign_in_label}</a>').format(
                             sign_in_label=_("sign in"),
                             current_url=quote_plus(request.path),
                         ),
@@ -537,7 +537,7 @@ class CourseTabView(EdxFragmentView):
                 PageLevelMessages.register_warning_message(
                     request,
                     Text(_("{sign_in_link} or {register_link}.")).format(
-                        sign_in_link=HTML('<a href="/login?next={current_url}">{sign_in_label}</a>').format(
+                        sign_in_link=HTML('<a href="/auth/login/auth0-plugin/?auth_entry=login&next={current_url}">{sign_in_label}</a>').format(
                             sign_in_label=_("Sign in"),
                             current_url=quote_plus(request.path),
                         ),
