@@ -1,3 +1,4 @@
+
 """
 Instructor API endpoint urls.
 """
@@ -32,14 +33,14 @@ urlpatterns = [
     path('get_students_who_may_enroll', api.get_students_who_may_enroll, name='get_students_who_may_enroll'),
     path('get_anon_ids', api.get_anon_ids, name='get_anon_ids'),
     path('get_student_enrollment_status', api.get_student_enrollment_status, name="get_student_enrollment_status"),
-    path('get_student_progress_url', api.get_student_progress_url, name='get_student_progress_url'),
+    path('get_student_progress_url', api.StudentProgressUrl.as_view(), name='get_student_progress_url'),
     path('reset_student_attempts', api.reset_student_attempts, name='reset_student_attempts'),
     path('rescore_problem', api.rescore_problem, name='rescore_problem'),
     path('override_problem_score', api.override_problem_score, name='override_problem_score'),
     path('reset_student_attempts_for_entrance_exam', api.reset_student_attempts_for_entrance_exam,
          name='reset_student_attempts_for_entrance_exam'),
     path('rescore_entrance_exam', api.rescore_entrance_exam, name='rescore_entrance_exam'),
-    path('list_entrance_exam_instructor_tasks', api.list_entrance_exam_instructor_tasks,
+    path('list_entrance_exam_instructor_tasks', api.ListEntranceExamInstructorTasks.as_view(),
          name='list_entrance_exam_instructor_tasks'),
     path('mark_student_can_skip_entrance_exam', api.mark_student_can_skip_entrance_exam,
          name='mark_student_can_skip_entrance_exam'),

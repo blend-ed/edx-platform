@@ -135,7 +135,7 @@ REQUIRE_DEBUG = DEBUG
 
 PIPELINE['SASS_ARGUMENTS'] = '--debug-info'
 
-# Load development webpack donfiguration
+# Load development webpack configuration
 WEBPACK_CONFIG_PATH = 'webpack.dev.config.js'
 
 ########################### VERIFIED CERTIFICATES #################################
@@ -261,9 +261,6 @@ TOKEN_SIGNING.update({
         'puDrQ9_vaY_RLEulLCyY0INglHWQ7pckxBtI5q55-Vio2wgewe2_qYcGsnBGaDNbySAsvYcWRrqDiFyzrJYivodqTQ"}]}'
     )
 })
-
-############################### BLOCKSTORE #####################################
-BLOCKSTORE_API_URL = "http://edx.devstack.blockstore:18250/api/v1/"
 
 ########################## PROGRAMS LEARNER PORTAL ##############################
 LEARNER_PORTAL_URL_ROOT = 'http://localhost:8734'
@@ -549,6 +546,7 @@ AI_TRANSLATIONS_API_URL = 'http://localhost:18760/api/v1'
 # MFEs that will call this service in devstack
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:2000',  # frontend-app-learning
+    'http://localhost:2001',  # frontend-app-course-authoring
     'http://localhost:1997',  # frontend-app-account
     'http://localhost:1995',  # frontend-app-profile
     'http://localhost:1992',  # frontend-app-ora
@@ -557,6 +555,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:1999',  # frontend-app-authn
     'http://localhost:18450',  # frontend-app-support-tools
     'http://localhost:1994',  # frontend-app-gradebook
+    'http://localhost:1996',  # frontend-app-learner-dashboard
 ]
 
 

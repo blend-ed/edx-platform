@@ -55,7 +55,7 @@ releases/quince.txt
 * Supports only Python 3.8
 
 releases/redwood.txt
---------------------
+----------------------------------
 
 * Frozen at the time of the Redwood release
 * Supports Python 3.8 and Python 3.11
