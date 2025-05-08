@@ -1,5 +1,4 @@
 """Helper functions for working with Credentials."""
-
 import logging
 from typing import Dict, List
 from urllib.parse import urljoin
@@ -37,7 +36,7 @@ def get_credentials_records_url(program_uuid=None):
     return base_url
 
 
-def get_credentials_api_client(user) -> requests.Session:
+def get_credentials_api_client(user):
     """
     Returns an authenticated Credentials API client.
 
@@ -105,7 +104,9 @@ def get_credentials(
     # Bypass caching for staff users, who may be generating credentials and
     # want to see them displayed immediately.
     use_cache = credential_configuration.is_cache_enabled and not user.is_staff
-    cache_key = f"{credential_configuration.CACHE_KEY}.{user.username}" if use_cache else None
+    cache_key = (
+        f"{credential_configuration.CACHE_KEY}.{user.username}" if use_cache else None
+    )
     if cache_key and program_uuid:
         cache_key = f"{cache_key}.{program_uuid}"
 
@@ -138,9 +139,14 @@ def get_courses_completion_status(username, course_run_ids):
         log.warning("%s configuration is disabled.", credential_configuration.API_NAME)
         return [], False
 
-    completion_status_url = f"{settings.CREDENTIALS_INTERNAL_SERVICE_URL}/api" "/credentials/v1/learner_cert_status/"
+    completion_status_url = (
+        f"{settings.CREDENTIALS_INTERNAL_SERVICE_URL}/api"
+        "/credentials/v1/learner_cert_status/"
+    )
     try:
-        api_client = get_credentials_api_client(User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME))
+        api_client = get_credentials_api_client(
+            User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME)
+        )
         api_response = api_client.post(
             completion_status_url,
             json={

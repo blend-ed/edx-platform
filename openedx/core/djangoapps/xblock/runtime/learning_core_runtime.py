@@ -10,7 +10,9 @@ from datetime import datetime, timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import atomic
 
-from openedx_learning.api import authoring as authoring_api
+from openedx_learning.core.components import api as components_api
+from openedx_learning.core.contents import api as contents_api
+from openedx_learning.core.publishing import api as publishing_api
 
 from lxml import etree
 
@@ -19,7 +21,7 @@ from xblock.exceptions import NoSuchUsage
 from xblock.fields import Field, Scope, ScopeIds
 from xblock.field_data import FieldData
 
-from openedx.core.lib.xblock_serializer.api import serialize_modulestore_block_for_learning_core
+from openedx.core.lib.xblock_serializer.api import serialize_modulestore_block_for_blockstore
 from ..learning_context.manager import get_learning_context_impl
 from .runtime import XBlockRuntime
 
@@ -232,21 +234,25 @@ class LearningCoreXBlockRuntime(XBlockRuntime):
                 log.warning("User %s does not have permission to edit %s", self.user.username, block.scope_ids.usage_id)
                 raise RuntimeError("You do not have permission to edit this XBlock")
 
-        serialized = serialize_modulestore_block_for_learning_core(block)
+        # We need Blockstore's serialization so we don't have `url_name` showing
+        # up in all the OLX. TODO: Rename this later, after we figure out what
+        # other changes we need to make in the serialization as part of the
+        # Blockstore -> Learning Core conversion.
+        serialized = serialize_modulestore_block_for_blockstore(block)
         now = datetime.now(tz=timezone.utc)
         usage_key = block.scope_ids.usage_id
         with atomic():
             component = self._get_component_from_usage_key(usage_key)
-            block_media_type = authoring_api.get_or_create_media_type(
+            block_media_type = contents_api.get_or_create_media_type(
                 f"application/vnd.openedx.xblock.v1.{usage_key.block_type}+xml"
             )
-            content = authoring_api.get_or_create_text_content(
+            content = contents_api.get_or_create_text_content(
                 component.learning_package_id,
                 block_media_type.id,
                 text=serialized.olx_str,
                 created=now,
             )
-            authoring_api.create_next_version(
+            components_api.create_next_version(
                 component.pk,
                 title=block.display_name,
                 content_to_replace={
@@ -265,9 +271,9 @@ class LearningCoreXBlockRuntime(XBlockRuntime):
         TODO: This is the third place where we're implementing this. Figure out
         where the definitive place should be and have everything else call that.
         """
-        learning_package = authoring_api.get_learning_package_by_key(str(usage_key.lib_key))
+        learning_package = publishing_api.get_learning_package_by_key(str(usage_key.lib_key))
         try:
-            component = authoring_api.get_component_by_key(
+            component = components_api.get_component_by_key(
                 learning_package.id,
                 namespace='xblock.v1',
                 type_name=usage_key.block_type,

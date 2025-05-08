@@ -33,7 +33,10 @@ class XBlockAppConfig(AppConfig):
     def get_learning_context_params(self):
         """
         Get additional kwargs that are passed to learning context implementations
-        (LearningContext subclass constructors).
+        (LearningContext subclass constructors). For example, this can be used to
+        specify that the course learning context should load the course's list of
+        blocks from the _draft_ version of the course in studio, but from the
+        published version of the course in the LMS.
         """
         return {}
 
@@ -65,6 +68,8 @@ class StudioXBlockAppConfig(XBlockAppConfig):
     Studio-specific configuration of the XBlock Runtime django app.
     """
 
+    BLOCKSTORE_DRAFT_NAME = "studio_draft"
+
     def get_runtime_system_params(self):
         """
         Get the XBlockRuntimeSystem parameters appropriate for viewing and/or
@@ -86,9 +91,14 @@ class StudioXBlockAppConfig(XBlockAppConfig):
     def get_learning_context_params(self):
         """
         Get additional kwargs that are passed to learning context implementations
-        (LearningContext subclass constructors).
+        (LearningContext subclass constructors). For example, this can be used to
+        specify that the course learning context should load the course's list of
+        blocks from the _draft_ version of the course in studio, but from the
+        published version of the course in the LMS.
         """
-        return {}
+        return {
+            "use_draft": self.BLOCKSTORE_DRAFT_NAME,
+        }
 
 
 def get_xblock_app_config():

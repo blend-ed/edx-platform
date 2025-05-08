@@ -25,7 +25,7 @@ class LibraryToolsService:
     """
     Service for LibraryContentBlock.
 
-    Allows to interact with libraries in the modulestore and learning core.
+    Allows to interact with libraries in the modulestore and blockstore.
 
     Should only be used in the CMS.
     """

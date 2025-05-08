@@ -11,7 +11,6 @@ from pprint import pformat
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.core.management.base import BaseCommand, CommandError
 
-from lms.djangoapps.verify_student.api import send_approval_email
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
 from lms.djangoapps.verify_student.utils import earliest_allowed_verification_date
 
@@ -126,8 +125,8 @@ class Command(BaseCommand):
 
     def _approve_id_verifications(self, user_ids):
         """
-        This method manually approves ID verification attempts for a provided set of user IDs so long as the attempt
-        is in the submitted or must_retry state. This method also send an IDV approval email to the user.
+        This command manually approves ID verification attempts for a provided set of learners whose ID verification
+        attempt is in the submitted or must_retry state.
 
         Arguments:
             user_ids (list): user IDs of the users whose ID verification attempt should be manually approved
@@ -149,6 +148,5 @@ class Command(BaseCommand):
 
         for verification in existing_id_verifications:
             verification.approve(service='idv_verifications command')
-            send_approval_email(verification)
 
         return list(failed_user_ids)

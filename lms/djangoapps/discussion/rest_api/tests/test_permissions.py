@@ -66,10 +66,10 @@ class GetInitializableFieldsTest(ModuleStoreTestCase):
         actual = get_initializable_thread_fields(context)
         expected = {
             "abuse_flagged", "copy_link", "course_id", "following", "raw_body",
-            "read", "title", "topic_id", "type"
+            "read", "title", "topic_id", "type", "voted"
         }
         if is_privileged:
-            expected |= {"closed", "pinned", "close_reason_code", "voted"}
+            expected |= {"closed", "pinned", "close_reason_code"}
         if is_privileged and is_cohorted:
             expected |= {"group_id"}
         if allow_anonymous:
@@ -88,10 +88,8 @@ class GetInitializableFieldsTest(ModuleStoreTestCase):
         )
         actual = get_initializable_comment_fields(context)
         expected = {
-            "anonymous", "abuse_flagged", "parent_id", "raw_body", "thread_id"
+            "anonymous", "abuse_flagged", "parent_id", "raw_body", "thread_id", "voted"
         }
-        if is_privileged:
-            expected |= {"voted"}
         if (is_thread_author and thread_type == "question") or is_privileged:
             expected |= {"endorsed"}
         assert actual == expected
@@ -121,13 +119,11 @@ class GetEditableFieldsTest(ModuleStoreTestCase):
             is_staff_or_admin=is_staff_or_admin,
         )
         actual = get_editable_fields(thread, context)
-        expected = {"abuse_flagged", "copy_link", "following", "read"}
+        expected = {"abuse_flagged", "copy_link", "following", "read", "voted"}
         if has_moderation_privilege:
             expected |= {"closed", "close_reason_code"}
         if has_moderation_privilege or is_staff_or_admin:
             expected |= {"pinned"}
-        if has_moderation_privilege or not is_author or is_staff_or_admin:
-            expected |= {"voted"}
         if has_moderation_privilege and not is_author:
             expected |= {"edit_reason_code"}
         if is_author or has_moderation_privilege:
@@ -166,9 +162,7 @@ class GetEditableFieldsTest(ModuleStoreTestCase):
             has_moderation_privilege=has_moderation_privilege,
         )
         actual = get_editable_fields(comment, context)
-        expected = {"abuse_flagged"}
-        if has_moderation_privilege or not is_author:
-            expected |= {"voted"}
+        expected = {"abuse_flagged", "voted"}
         if has_moderation_privilege and not is_author:
             expected |= {"edit_reason_code"}
         if is_author or has_moderation_privilege:

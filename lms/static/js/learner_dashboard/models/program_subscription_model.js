@@ -19,6 +19,10 @@ class ProgramSubscriptionModel extends Backbone.Model {
         } = context;
 
         const priceInUSD = subscription_prices?.find(({ currency }) => currency === 'USD');
+        const trialMoment = DateUtils.localizeTime(
+            DateUtils.stringToMoment(data.trial_end),
+            'UTC'
+        );
 
         const subscriptionState = data.subscription_state?.toLowerCase() ?? '';
         const subscriptionPrice = StringUtils.interpolate(
@@ -34,15 +38,24 @@ class ProgramSubscriptionModel extends Backbone.Model {
                 ? urls.manage_subscription_url
                 : urls.buy_subscription_url;
 
-        const hasActiveTrial = false;
+        const hasActiveTrial =
+            subscriptionState === 'active' && data.trial_end
+                ? trialMoment.isAfter(moment.utc())
+                : false;
 
-        const remainingDays = 0;
+        const remainingDays = ProgramSubscriptionModel.getRemainingDays(
+            data.trial_end,
+            userPreferences
+        );
 
         const [currentPeriodEnd] = ProgramSubscriptionModel.formatDate(
             data.current_period_end,
             userPreferences
         );
-        const [trialEndDate, trialEndTime] = ['', ''];
+        const [trialEndDate, trialEndTime] = ProgramSubscriptionModel.formatDate(
+            data.trial_end,
+            userPreferences
+        );
 
         super(
             {
@@ -66,7 +79,7 @@ class ProgramSubscriptionModel extends Backbone.Model {
         }
 
         const userTimezone = (
-            userPreferences.time_zone || moment?.tz?.guess?.() || 'UTC'
+            userPreferences.time_zone || moment.tz.guess() || 'UTC'
         );
         const userLanguage = userPreferences['pref-lang'] || 'en';
         const context = {
@@ -77,9 +90,36 @@ class ProgramSubscriptionModel extends Backbone.Model {
         };
 
         const localDate = DateUtils.localize(context);
-        const localTime = '';
+        const localTime = DateUtils.localizeTime(
+            DateUtils.stringToMoment(date),
+            userTimezone
+        ).format('HH:mm (z)');
 
         return [localDate, localTime];
+    }
+
+    static getRemainingDays(trialEndDate, userPreferences) {
+        if (!trialEndDate) {
+            return 0;
+        }
+
+        const userTimezone = (
+            userPreferences.time_zone || moment.tz.guess() || 'UTC'
+        );
+        const trialEndTime = DateUtils.localizeTime(
+            DateUtils.stringToMoment(trialEndDate),
+            userTimezone
+        );
+        const currentTime = DateUtils.localizeTime(
+            moment.utc(),
+            userTimezone
+        );
+
+        return trialEndTime.diff(currentTime, 'days') < 1
+            ? // 0 if trial end time is less than 24 hrs
+              0
+            : // else return actual difference in days
+              trialEndTime.startOf('day').diff(currentTime.startOf('day'), 'days');
     }
 }
 

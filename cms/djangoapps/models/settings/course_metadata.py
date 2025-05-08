@@ -3,8 +3,8 @@ Django module for Course Metadata class -- manages advanced settings and related
 """
 
 
-import logging
 from datetime import datetime
+import logging
 
 import pytz
 from django.conf import settings
@@ -22,7 +22,7 @@ from openedx.features.course_experience import COURSE_ENABLE_UNENROLLED_ACCESS_F
 from xmodule.course_block import get_available_providers  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.exceptions import InvalidProctoringProvider  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.partitions.partitions import MINIMUM_UNUSED_PARTITION_ID
+from xmodule.partitions.partitions import MINIMUM_STATIC_PARTITION_ID
 from xmodule.partitions.partitions_service import get_all_partitions_for_course
 
 LOGGER = logging.getLogger(__name__)
@@ -81,7 +81,6 @@ class CourseMetadata:
         'highlights_enabled_for_messaging',
         'is_onboarding_exam',
         'discussions_settings',
-        'copied_from_block',
     ]
 
     @classmethod
@@ -317,7 +316,7 @@ class CourseMetadata:
             if not team_set.user_partition_id:
                 team_set.user_partition_id = cls.get_user_partition_id(
                     block,
-                    MINIMUM_UNUSED_PARTITION_ID,
+                    MINIMUM_STATIC_PARTITION_ID,
                     MYSQL_MAX_INT,
                 )
         return TeamsConfig(

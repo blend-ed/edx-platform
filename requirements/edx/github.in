@@ -29,16 +29,16 @@
 #
 # For example:
 #
-#   # https://github.com/openedx/foobar/issues/212
-#   git+https://github.com/openedx/foobar.git@v1.3.0#egg=openedx-foobar==1.3.0
+#   # https://github.com/openedx/blockstore/issues/212
+#   git+https://github.com/openedx/blockstore.git@v1.3.0#egg=openedx-blockstore==1.3.0
 #
 # where:
 #
-#   ISSUE-LINK = https://github.com/openedx/foobar/issues/212
+#   ISSUE-LINK = https://github.com/openedx/blockstore/issues/212
 #   OWNER = openedx
-#   REPO-NAME = foobar
+#   REPO-NAME = blockstore
 #   TAG-OR-SHA = v1.3.0
-#   DIST-NAME = openedx-foobar
+#   DIST-NAME = openedx-blockstore
 #   VERSION = 1.3.0
 #
 # Rules to follow:

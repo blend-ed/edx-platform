@@ -8,10 +8,11 @@ import re
 from cmath import isinf, isnan
 from decimal import Decimal
 
-import nh3
+import bleach
 from calc import evaluator
 from lxml import etree
 
+from bleach.css_sanitizer import CSSSanitizer
 from openedx.core.djangolib.markup import HTML
 
 #-----------------------------------------------------------------------------
@@ -181,15 +182,17 @@ def sanitize_html(html_code):
 
     Used to sanitize XQueue responses from Matlab.
     """
-    attributes = nh3.ALLOWED_ATTRIBUTES.copy()
+    attributes = bleach.ALLOWED_ATTRIBUTES.copy()
     attributes.update({
-        '*': {'class', 'style', 'id'},
-        'audio': {'controls', 'autobuffer', 'autoplay', 'src'},
-        'img': {'src', 'width', 'height', 'class'}
+        '*': ['class', 'style', 'id'],
+        'audio': ['controls', 'autobuffer', 'autoplay', 'src'],
+        'img': ['src', 'width', 'height', 'class']
     })
-    output = nh3.clean(
+    output = bleach.clean(
         html_code,
-        tags=nh3.ALLOWED_TAGS | {'div', 'p', 'audio', 'pre', 'img', 'span'},
+        protocols=bleach.ALLOWED_PROTOCOLS | {'data'},
+        tags=bleach.ALLOWED_TAGS | {'div', 'p', 'audio', 'pre', 'img', 'span'},
+        css_sanitizer=CSSSanitizer(allowed_css_properties=["white-space"]),
         attributes=attributes
     )
     return output
@@ -212,12 +215,12 @@ def remove_markup(html):
     """
     Return html with markup stripped and text HTML-escaped.
 
-    >>> nh3.clean("<b>Rock & Roll</b>", tags=set())
+    >>> bleach.clean("<b>Rock & Roll</b>", tags=set(), strip=True)
     'Rock &amp; Roll'
-    >>> nh3.clean("<b>Rock &amp; Roll</b>", tags=set())
+    >>> bleach.clean("<b>Rock &amp; Roll</b>", tags=set(), strip=True)
     'Rock &amp; Roll'
     """
-    return HTML(nh3.clean(html, tags=set()))
+    return HTML(bleach.clean(html, tags=set(), strip=True))
 
 
 def get_course_id_from_capa_block(capa_block):

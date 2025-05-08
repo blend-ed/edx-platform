@@ -1,5 +1,5 @@
 """
-Test the Learning-Core-based XBlock runtime and content libraries together.
+Test the Blockstore-based XBlock runtime and content libraries together.
 """
 import json
 from gettext import GNUTranslations
@@ -14,6 +14,7 @@ from xblock.core import XBlock
 from lms.djangoapps.courseware.model_data import get_score
 from openedx.core.djangoapps.content_libraries import api as library_api
 from openedx.core.djangoapps.content_libraries.tests.base import (
+    BlockstoreAppTestMixin,
     URL_BLOCK_RENDER_VIEW,
     URL_BLOCK_GET_HANDLER_URL,
     URL_BLOCK_METADATA_URL,
@@ -59,9 +60,9 @@ class ContentLibraryContentTestMixin:
             )
 
 
-class ContentLibraryRuntimeTests(ContentLibraryContentTestMixin):
+class ContentLibraryRuntimeTestMixin(ContentLibraryContentTestMixin):
     """
-    Basic tests of the Learning-Core-based XBlock runtime using XBlocks in a
+    Basic tests of the Blockstore-based XBlock runtime using XBlocks in a
     content library.
     """
 
@@ -94,7 +95,7 @@ class ContentLibraryRuntimeTests(ContentLibraryContentTestMixin):
         <problem display_name="New Multi Choice Question" max_attempts="5">
             <multiplechoiceresponse>
                 <p>This is a normal capa problem. It has "maximum attempts" set to **5**.</p>
-                <label>Learning Core is designed to store.</label>
+                <label>Blockstore is designed to store.</label>
                 <choicegroup type="MultipleChoice">
                     <choice correct="false">XBlock metadata only</choice>
                     <choice correct="true">XBlock data/metadata and associated static asset files</choice>
@@ -173,10 +174,18 @@ class ContentLibraryRuntimeTests(ContentLibraryContentTestMixin):
         assert block_saved.display_name == 'New Display Name'
 
 
+class ContentLibraryRuntimeTest(ContentLibraryRuntimeTestMixin, BlockstoreAppTestMixin):
+    """
+    Tests XBlock runtime using XBlocks in a content library using the installed Blockstore app.
+
+    We run this test with a live server, so that the blockstore asset files can be served.
+    """
+
+
 # We can remove the line below to enable this in Studio once we implement a session-backed
 # field data store which we can use for both studio users and anonymous users
 @skip_unless_lms
-class ContentLibraryXBlockUserStateTest(ContentLibraryContentTestMixin):
+class ContentLibraryXBlockUserStateTestMixin(ContentLibraryContentTestMixin):
     """
     Test that the Blockstore-based XBlock runtime can store and retrieve student
     state for XBlocks when learners access blocks directly in a library context,
@@ -380,7 +389,7 @@ class ContentLibraryXBlockUserStateTest(ContentLibraryContentTestMixin):
         <problem display_name="New Multi Choice Question" max_attempts="5">
             <multiplechoiceresponse>
                 <p>This is a normal capa problem. It has "maximum attempts" set to **5**.</p>
-                <label>Learning Core is designed to store.</label>
+                <label>Blockstore is designed to store.</label>
                 <choicegroup type="MultipleChoice">
                     <choice correct="false">XBlock metadata only</choice>
                     <choice correct="true">XBlock data/metadata and associated static asset files</choice>
@@ -444,7 +453,7 @@ class ContentLibraryXBlockUserStateTest(ContentLibraryContentTestMixin):
         <problem display_name="New Multi Choice Question" max_attempts="5">
             <multiplechoiceresponse>
                 <p>This is a normal capa problem. It has "maximum attempts" set to **5**.</p>
-                <label>Learning Core is designed to store.</label>
+                <label>Blockstore is designed to store.</label>
                 <choicegroup type="MultipleChoice">
                     <choice correct="false">XBlock metadata only</choice>
                     <choice correct="true">XBlock data/metadata and associated static asset files</choice>
@@ -478,8 +487,19 @@ class ContentLibraryXBlockUserStateTest(ContentLibraryContentTestMixin):
         assert 'Submit' not in dummy_public_view.data['content']
 
 
+class ContentLibraryXBlockUserStateTest(  # type: ignore[misc]
+    ContentLibraryXBlockUserStateTestMixin,
+    BlockstoreAppTestMixin,
+):
+    """
+    Tests XBlock user state for XBlocks in a content library using the installed Blockstore app.
+
+    We run this test with a live server, so that the blockstore asset files can be served.
+    """
+
+
 @skip_unless_lms  # No completion tracking in Studio
-class ContentLibraryXBlockCompletionTest(ContentLibraryContentTestMixin, CompletionWaffleTestMixin):
+class ContentLibraryXBlockCompletionTestMixin(ContentLibraryContentTestMixin, CompletionWaffleTestMixin):
     """
     Test that the Blockstore-based XBlocks can track their completion status
     using the completion library.
@@ -530,3 +550,16 @@ class ContentLibraryXBlockCompletionTest(ContentLibraryContentTestMixin, Complet
 
         # Now the block is completed
         assert get_block_completion_status() == 1
+
+
+class ContentLibraryXBlockCompletionTest(
+    ContentLibraryXBlockCompletionTestMixin,
+    CompletionWaffleTestMixin,
+    BlockstoreAppTestMixin,
+):
+    """
+    Test that the Blockstore-based XBlocks can track their completion status
+    using the installed Blockstore app.
+
+    We run this test with a live server, so that the blockstore asset files can be served.
+    """

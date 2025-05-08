@@ -108,7 +108,6 @@ class EmailString(String):
     """
     Parse String with email validation
     """
-
     def from_json(self, value):
         if value:
             validate_email(value)
@@ -227,7 +226,6 @@ class ProctoringProvider(String):
     ProctoringProvider field, which includes validation of the provider
     and default that pulls from edx platform settings.
     """
-
     def from_json(self, value):
         """
         Return ProctoringProvider as full featured Python type. Perform validation on the provider
@@ -1459,18 +1457,15 @@ class CourseBlock(
     @property
     def forum_posts_allowed(self):
         """
-        Return whether forum posts are allowed by the discussion_blackouts setting
-        Checks if posting restrictions are enabled or if there's a currently ongoing blackout period.
+        Return whether forum posts are allowed by the discussion_blackouts
+        setting
         """
-
         blackouts = self.get_discussion_blackout_datetimes()
-        posting_restrictions = self.discussions_settings.get('posting_restrictions', 'disabled')
         now = datetime.now(utc)
-
-        if posting_restrictions == 'enabled':
-            return False
-
-        return all(not (blackout["start"] <= now <= blackout["end"]) for blackout in blackouts)
+        for blackout in blackouts:
+            if blackout["start"] <= now <= blackout["end"]:
+                return False
+        return True
 
     @property
     def number(self):

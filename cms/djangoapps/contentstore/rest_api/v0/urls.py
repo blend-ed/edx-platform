@@ -7,7 +7,6 @@ from openedx.core.constants import COURSE_ID_PATTERN
 
 from .views import (
     AdvancedCourseSettingsView,
-    AuthoringGradingView,
     CourseTabSettingsView,
     CourseTabListView,
     CourseTabReorderView,
@@ -47,8 +46,8 @@ urlpatterns = [
     ),
 
     # Authoring API
-    path(
-        'heartbeat', APIHeartBeatView.as_view(), name='heartbeat'
+    re_path(
+        r'^heartbeat$', APIHeartBeatView.as_view(), name='heartbeat'
     ),
     re_path(
         fr'^file_assets/{settings.COURSE_ID_PATTERN}$',
@@ -61,10 +60,6 @@ urlpatterns = [
     re_path(
         fr'^videos/encodings/{settings.COURSE_ID_PATTERN}$',
         authoring_videos.VideoEncodingsDownloadView.as_view(), name='cms_api_videos_encodings'
-    ),
-    re_path(
-        fr'grading/{settings.COURSE_ID_PATTERN}',
-        AuthoringGradingView.as_view(), name='cms_api_update_grading'
     ),
     path(
         'videos/features',

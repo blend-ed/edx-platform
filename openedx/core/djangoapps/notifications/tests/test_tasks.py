@@ -2,12 +2,12 @@
 Tests for notifications tasks.
 """
 
-import datetime
 from unittest.mock import patch
 
+import datetime
 import ddt
-from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from edx_toggles.toggles.testutils import override_waffle_flag
 
 from common.djangoapps.student.models import CourseEnrollment
@@ -15,6 +15,7 @@ from common.djangoapps.student.tests.factories import UserFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
+from .utils import create_notification
 from ..config.waffle import ENABLE_NOTIFICATIONS
 from ..models import CourseNotificationPreference, Notification
 from ..tasks import (
@@ -23,7 +24,6 @@ from ..tasks import (
     send_notifications,
     update_user_preference
 )
-from .utils import create_notification
 
 
 @patch('openedx.core.djangoapps.notifications.models.COURSE_NOTIFICATION_CONFIG_VERSION', 1)
@@ -225,6 +225,7 @@ class SendNotificationsTest(ModuleStoreTestCase):
 
 
 @ddt.ddt
+@patch('openedx.core.djangoapps.notifications.tasks.ENABLE_NOTIFICATIONS_FILTERS.is_enabled', lambda x: False)
 class SendBatchNotificationsTest(ModuleStoreTestCase):
     """
     Test that notification and notification preferences are created in batches
@@ -254,9 +255,9 @@ class SendBatchNotificationsTest(ModuleStoreTestCase):
 
     @override_waffle_flag(ENABLE_NOTIFICATIONS, active=True)
     @ddt.data(
-        (settings.NOTIFICATION_CREATION_BATCH_SIZE, 7, 3),
-        (settings.NOTIFICATION_CREATION_BATCH_SIZE + 10, 9, 6),
-        (settings.NOTIFICATION_CREATION_BATCH_SIZE - 10, 7, 3),
+        (settings.NOTIFICATION_CREATION_BATCH_SIZE, 1, 2),
+        (settings.NOTIFICATION_CREATION_BATCH_SIZE + 10, 2, 4),
+        (settings.NOTIFICATION_CREATION_BATCH_SIZE - 10, 1, 2),
     )
     @ddt.unpack
     def test_notification_is_send_in_batch(self, creation_size, prefs_query_count, notifications_query_count):
@@ -306,7 +307,7 @@ class SendBatchNotificationsTest(ModuleStoreTestCase):
             "username": "Test Author"
         }
         with override_waffle_flag(ENABLE_NOTIFICATIONS, active=True):
-            with self.assertNumQueries(7):
+            with self.assertNumQueries(1):
                 send_notifications(user_ids, str(self.course.id), notification_app, notification_type,
                                    context, "http://test.url")
 
@@ -325,7 +326,7 @@ class SendBatchNotificationsTest(ModuleStoreTestCase):
             "replier_name": "Replier Name"
         }
         with override_waffle_flag(ENABLE_NOTIFICATIONS, active=True):
-            with self.assertNumQueries(9):
+            with self.assertNumQueries(3):
                 send_notifications(user_ids, str(self.course.id), notification_app, notification_type,
                                    context, "http://test.url")
 

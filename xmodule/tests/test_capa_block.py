@@ -6,11 +6,12 @@ Tests of the Capa XModule
 
 import datetime
 import json
+import mock
 import os
 import random
 import textwrap
 import unittest
-from unittest.mock import DEFAULT, Mock, PropertyMock, patch
+from unittest.mock import DEFAULT, Mock, patch, PropertyMock
 
 import pytest
 import ddt
@@ -850,7 +851,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Disabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=False
         ):
             # First Attempt
@@ -876,7 +877,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Enabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=True
         ):
             # Third Attempt
@@ -917,7 +918,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Enabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=True
         ):
             # First Attempt
@@ -943,7 +944,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Disabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=False
         ):
             # Third Attempt
@@ -1666,7 +1667,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Disabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=False
         ):
             # Score is the last score
@@ -1682,12 +1683,12 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Enabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=True
         ):
             with patch(
                 'xmodule.capa.capa_problem.LoncapaProblem.is_grading_method_enabled',
-                new_callable=PropertyMock,
+                new_callable=mock.PropertyMock,
                 return_value=True
             ):
                 # Change grading method to 'first_score'
@@ -1736,12 +1737,12 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Enabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=True
         ):
             with patch(
                 'xmodule.capa.capa_problem.LoncapaProblem.is_grading_method_enabled',
-                new_callable=PropertyMock,
+                new_callable=mock.PropertyMock,
                 return_value=True
             ):
                 # Grading method is 'last_score'
@@ -1775,7 +1776,7 @@ class ProblemBlockTest(unittest.TestCase):  # lint-amnesty, pylint: disable=miss
         # Disabled grading method
         with patch(
             'xmodule.capa_block.ProblemBlock.is_grading_method_enabled',
-            new_callable=PropertyMock,
+            new_callable=mock.PropertyMock,
             return_value=False
         ):
             block.rescore(only_if_higher=False)

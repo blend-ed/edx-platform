@@ -7,7 +7,6 @@ import logging
 from datetime import timedelta
 
 from django.utils import timezone
-from django.conf import settings
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
@@ -23,7 +22,7 @@ def are_grades_frozen(course_key):
     if ENFORCE_FREEZE_GRADE_AFTER_COURSE_END.is_enabled(course_key):
         course = CourseOverview.get_from_id(course_key)
         if course.end:
-            freeze_grade_date = course.end + timedelta(settings.GRADEBOOK_FREEZE_DAYS)
+            freeze_grade_date = course.end + timedelta(30)
             now = timezone.now()
             return now > freeze_grade_date
     return False

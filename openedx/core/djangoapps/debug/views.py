@@ -5,7 +5,7 @@ in a 404 error.
 """
 
 
-import nh3
+import bleach
 from django.http import HttpResponseNotFound
 from django.template import TemplateDoesNotExist
 from django.utils.translation import gettext as _
@@ -54,4 +54,4 @@ def show_reference_template(request, template):
 
         return render_to_response(template, context)
     except TemplateDoesNotExist:
-        return HttpResponseNotFound(f'Missing template {nh3.clean(template)}')
+        return HttpResponseNotFound(f'Missing template {bleach.clean(template, strip=True)}')

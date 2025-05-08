@@ -6,8 +6,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import pytest
+from edx_toggles.toggles.testutils import override_waffle_flag
 
 from lms.djangoapps.discussion.rest_api.discussions_notifications import DiscussionNotificationSender
+from lms.djangoapps.discussion.toggles import ENABLE_REPORTED_CONTENT_NOTIFICATIONS
 
 
 @patch('lms.djangoapps.discussion.rest_api.discussions_notifications.DiscussionNotificationSender'
@@ -20,6 +22,7 @@ class TestDiscussionNotificationSender(unittest.TestCase):
     Tests for the DiscussionNotificationSender class
     """
 
+    @override_waffle_flag(ENABLE_REPORTED_CONTENT_NOTIFICATIONS, True)
     def setUp(self):
         self.thread = MagicMock()
         self.course = MagicMock()

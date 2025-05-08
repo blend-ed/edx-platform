@@ -218,6 +218,9 @@ IDA_LOGOUT_URI_LIST = [
 
 ENTERPRISE_BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = "http://edx.devstack.lms/oauth2"
 
+############################### BLOCKSTORE #####################################
+BLOCKSTORE_API_URL = "http://edx.devstack.blockstore:18250/api/v1/"
+
 #####################################################################
 
 # pylint: disable=wrong-import-order, wrong-import-position
@@ -260,6 +263,17 @@ FEATURES['ENABLE_PREREQUISITE_COURSES'] = True
 # Used in edx-proctoring for ID generation in lieu of SECRET_KEY - dummy value
 # (ref MST-637)
 PROCTORING_USER_OBFUSCATION_KEY = '85920908f28904ed733fe576320db18cabd7b6cd'
+
+############## CourseGraph devstack settings ############################
+
+COURSEGRAPH_CONNECTION: dict = {
+    "protocol": "bolt",
+    "secure": False,
+    "host": "edx.devstack.coursegraph",
+    "port": 7687,
+    "user": "neo4j",
+    "password": "edx",
+}
 
 #################### Webpack Configuration Settings ##############################
 WEBPACK_LOADER['DEFAULT']['TIMEOUT'] = 5

@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import pytest
 from path import Path as path
 from paver.easy import call_task, BuildFailure
 
@@ -61,15 +62,9 @@ class TestPaverPIICheck(unittest.TestCase):
         ])
 
         mock_needs.return_value = 0
-        try:
-            with self.assertRaises(BuildFailure):
-                call_task('pavelib.quality.run_pii_check', options={"report_dir": str(self.report_dir)})
-        except SystemExit:
-            # Sometimes the BuildFailure raises a SystemExit, sometimes it doesn't, not sure why.
-            # As a hack, we just wrap it in try-except.
-            # This is not good, but these tests weren't even running for years, and we're removing this whole test
-            # suite soon anyway.
-            pass
+        with pytest.raises(SystemExit):
+            call_task('pavelib.quality.run_pii_check', options={"report_dir": str(self.report_dir)})
+            self.assertRaises(BuildFailure)
         mock_calls = [str(call) for call in mock_paver_sh.mock_calls]
         assert len(mock_calls) == 2
         assert any('lms.envs.test' in call for call in mock_calls)

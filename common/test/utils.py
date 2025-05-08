@@ -1,7 +1,6 @@
 """
 General testing utilities.
 """
-from unittest.mock import Mock, patch
 
 
 import functools
@@ -10,6 +9,7 @@ from contextlib import contextmanager
 
 from django.dispatch import Signal
 from markupsafe import escape
+from mock import Mock, patch
 
 
 @contextmanager
